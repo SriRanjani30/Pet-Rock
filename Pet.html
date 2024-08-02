@@ -34,6 +34,12 @@
             align-items: center;
         }
 
+        .eyes {
+            display: flex;
+            justify-content: space-between;
+            width: 100px;
+        }
+
         .eye {
             width: 40px;
             height: 40px;
@@ -46,14 +52,6 @@
             overflow: hidden;
         }
 
-        .eye.left {
-            margin-right: 30px;
-        }
-
-        .eye.right {
-            margin-left: 70px;
-        }
-
         .pupil {
             width: 20px;
             height: 20px;
@@ -63,12 +61,35 @@
             transform: translate(-50%, -50%);
         }
 
+        .eyelid {
+            width: 100%;
+            height: 50%;
+            background-color: gray;
+            position: absolute;
+            top: 0;
+            transform-origin: top;
+            transition: transform 0.3s;
+        }
+
+        .eyelid.closed {
+            transform: scaleY(1);
+        }
+
+        .eyelid.open {
+            transform: scaleY(0);
+        }
+
         .mouth {
             width: 40px;
             height: 10px;
             background-color: black;
             border-radius: 5px;
-            margin-top: 20px;
+            margin-top: 40px;
+        }
+
+        .mouth.happy {
+            transform: rotate(180deg);
+            margin-top: 10px;
         }
 
         .mouth.sad {
@@ -114,11 +135,15 @@
 <body>
     <div id="rock">
         <div class="face">
-            <div class="eye left">
-                <div class="pupil"></div>
-            </div>
-            <div class="eye right">
-                <div class="pupil"></div>
+            <div class="eyes">
+                <div class="eye left">
+                    <div class="pupil"></div>
+                    <div class="eyelid open"></div>
+                </div>
+                <div class="eye right">
+                    <div class="pupil"></div>
+                    <div class="eyelid open"></div>
+                </div>
             </div>
             <div class="mouth"></div>
         </div>
@@ -132,6 +157,7 @@
         const rock = document.getElementById('rock');
         const eyes = document.querySelectorAll('.eye');
         const pupils = document.querySelectorAll('.pupil');
+        const eyelids = document.querySelectorAll('.eyelid');
         const mouth = document.querySelector('.mouth');
         const feedButton = document.getElementById('feedButton');
         const sleepButton = document.getElementById('sleepButton');
@@ -157,7 +183,6 @@
             } else if (randomEmotion === 'surprised') {
                 mouth.classList.add('surprised');
             }
-           
         }
 
         function updateEyePositions(event) {
@@ -179,6 +204,7 @@
 
         function feedRock() {
             hungerPoints = 100;
+            mouth.className = 'mouth happy';
             updateStatus();
         }
 
@@ -199,15 +225,24 @@
                 if (hungerPoints === 0) {
                     status.textContent += ' (Feed me!)';
                     rock.style.backgroundColor = '#ff6347';
+                    mouth.className = 'mouth sad';
                 }
             }
+        }
+
+        function blink() {
+            eyelids.forEach(eyelid => {
+                eyelid.classList.toggle('open');
+                eyelid.classList.toggle('closed');
+            });
         }
 
         feedButton.addEventListener('click', feedRock);
         sleepButton.addEventListener('click', toggleSleep);
         document.addEventListener('mousemove', updateEyePositions);
-        setInterval(changeRockAppearance, 2000);
-        setInterval(updateStatus, 1000); 
+        setInterval(changeRockAppearance, 2000); 
+        setInterval(updateStatus, 1000);
+        setInterval(blink, 5000);
     </script>
 </body>
 </html>
