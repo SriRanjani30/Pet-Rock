@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Virtual Pet Rock</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f0f0f0;
+        }
+
+        #rock {
+            width: 200px;
+            height: 200px;
+            background-color: gray;
+            border-radius: 50%;
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: background-color 0.5s;
+        }
+
+        .face {
+            position: absolute;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .eye {
+            width: 20px;
+            height: 20px;
+            background-color: white;
+            border-radius: 50%;
+            position: relative;
+        }
+
+        .eye.left {
+            margin-right: 20px;
+        }
+
+        .eye.right {
+            margin-left: 20px;
+        }
+
+        .mouth {
+            width: 40px;
+            height: 10px;
+            background-color: black;
+            border-radius: 5px;
+            margin-top: 20px;
+        }
+
+        .mouth.sad {
+            transform: rotate(180deg);
+        }
+
+        .mouth.surprised {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+        }
+    </style>
+</head>
+<body>
+    <div id="rock">
+        <div class="face">
+            <div class="eye left"></div>
+            <div class="eye right"></div>
+            <div class="mouth"></div>
+        </div>
+    </div>
+    <script>
+        const rock = document.getElementById('rock');
+        const mouth = document.querySelector('.mouth');
+
+        function getRandomInt(max) {
+            return Math.floor(Math.random() * max);
+        }
+
+        function changeRockAppearance() {
+            const colors = ['gray', 'red', 'blue', 'green', 'yellow', 'purple'];
+            const emotions = ['happy', 'sad', 'surprised'];
+            
+          
+            const randomColor = colors[getRandomInt(colors.length)];
+            rock.style.backgroundColor = randomColor;
+
+            
+            const randomEmotion = emotions[getRandomInt(emotions.length)];
+            mouth.className = 'mouth';  
+
+            if (randomEmotion === 'sad') {
+                mouth.classList.add('sad');
+            } else if (randomEmotion === 'surprised') {
+                mouth.classList.add('surprised');
+            }
+            
+        }
+
+        setInterval(changeRockAppearance, 2000);
+    </script>
+</body>
+</html>
