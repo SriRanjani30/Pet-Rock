@@ -49,6 +49,17 @@
             margin-left: 20px;
         }
 
+        .pupil {
+            width: 10px;
+            height: 10px;
+            background-color: black;
+            border-radius: 50%;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
         .mouth {
             width: 40px;
             height: 10px;
@@ -71,13 +82,19 @@
 <body>
     <div id="rock">
         <div class="face">
-            <div class="eye left"></div>
-            <div class="eye right"></div>
+            <div class="eye left">
+                <div class="pupil"></div>
+            </div>
+            <div class="eye right">
+                <div class="pupil"></div>
+            </div>
             <div class="mouth"></div>
         </div>
     </div>
     <script>
         const rock = document.getElementById('rock');
+        const eyes = document.querySelectorAll('.eye');
+        const pupils = document.querySelectorAll('.pupil');
         const mouth = document.querySelector('.mouth');
 
         function getRandomInt(max) {
@@ -87,12 +104,10 @@
         function changeRockAppearance() {
             const colors = ['gray', 'red', 'blue', 'green', 'yellow', 'purple'];
             const emotions = ['happy', 'sad', 'surprised'];
-            
-          
             const randomColor = colors[getRandomInt(colors.length)];
             rock.style.backgroundColor = randomColor;
 
-            
+         
             const randomEmotion = emotions[getRandomInt(emotions.length)];
             mouth.className = 'mouth';  
 
@@ -101,9 +116,26 @@
             } else if (randomEmotion === 'surprised') {
                 mouth.classList.add('surprised');
             }
-            
         }
 
+        function updateEyePositions(event) {
+            const rockRect = rock.getBoundingClientRect();
+            const rockCenterX = rockRect.left + rockRect.width / 2;
+            const rockCenterY = rockRect.top + rockRect.height / 2;
+            const mouseX = event.clientX;
+            const mouseY = event.clientY;
+
+            eyes.forEach((eye, index) => {
+                const eyeRect = eye.getBoundingClientRect();
+                const eyeCenterX = eyeRect.left + eyeRect.width / 2;
+                const eyeCenterY = eyeRect.top + eyeRect.height / 2;
+                const angle = Math.atan2(mouseY - eyeCenterY, mouseX - eyeCenterX);
+                const eyeRadius = 5;
+                pupils[index].style.transform = `translate(${Math.cos(angle) * eyeRadius}px, ${Math.sin(angle) * eyeRadius}px)`;
+            });
+        }
+
+        document.addEventListener('mousemove', updateEyePositions);
         setInterval(changeRockAppearance, 2000);
     </script>
 </body>
