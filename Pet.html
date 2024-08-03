@@ -11,8 +11,68 @@
             align-items: center;
             height: 100vh;
             margin: 0;
-            background-color: #f0f0f0;
+            background-image: url('Images/day.jpg');
+            background-size: cover;
+            background-repeat: no-repeat;
+            transition: background-image 0.5s;
             font-family: Arial, sans-serif;
+        }
+
+        #menu {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+        }
+
+        .menu-button {
+            cursor: pointer;
+            width: 30px;
+            height: 30px;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 24px;
+            line-height: 30px;
+            text-align: center;
+            transition: background-color 0.3s;
+        }
+
+        .menu-button:hover {
+            background-color: #0056b3;
+        }
+
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            top: 40px;
+            right: 0;
+            background-color: #f9f9f9;
+            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+            border-radius: 5px;
+            overflow: hidden;
+        }
+
+        .dropdown-content button {
+            background-color: #f9f9f9;
+            color: black;
+            padding: 10px 20px;
+            border: none;
+            text-align: left;
+            width: 100%;
+            box-sizing: border-box;
+            transition: background-color 0.3s;
+        }
+
+        .dropdown-content button:hover {
+            background-color: #ddd;
+        }
+
+        .dropdown-content button:focus {
+            outline: none;
         }
 
         #rock {
@@ -133,6 +193,13 @@
     </style>
 </head>
 <body>
+    <div id="menu">
+        <div class="menu-button" onclick="toggleMenu()">☰</div>
+        <div class="dropdown-content" id="dropdownContent">
+            <button onclick="switchToDay()">Day</button>
+            <button onclick="switchToNight()">Night</button>
+        </div>
+    </div>
     <div id="rock">
         <div class="face">
             <div class="eyes">
@@ -162,7 +229,8 @@
         const feedButton = document.getElementById('feedButton');
         const sleepButton = document.getElementById('sleepButton');
         const status = document.getElementById('status');
-        
+        const dropdownContent = document.getElementById('dropdownContent');
+
         let hungerPoints = 100;
         let isAsleep = false;
 
@@ -213,7 +281,15 @@
             if (isAsleep) {
                 status.textContent = 'Status: Asleep';
                 rock.style.backgroundColor = '#a9a9a9';
+                eyelids.forEach(eyelid => {
+                    eyelid.classList.remove('open');
+                    eyelid.classList.add('closed');
+                });
             } else {
+                eyelids.forEach(eyelid => {
+                    eyelid.classList.remove('closed');
+                    eyelid.classList.add('open');
+                });
                 updateStatus();
             }
         }
@@ -231,16 +307,30 @@
         }
 
         function blink() {
-            eyelids.forEach(eyelid => {
-                eyelid.classList.toggle('open');
-                eyelid.classList.toggle('closed');
-            });
+            if (!isAsleep) {
+                eyelids.forEach(eyelid => {
+                    eyelid.classList.toggle('open');
+                    eyelid.classList.toggle('closed');
+                });
+            }
+        }
+
+        function switchToDay() {
+            document.body.style.backgroundImage = "url('Images/day.jpg')";
+        }
+
+        function switchToNight() {
+            document.body.style.backgroundImage = "url('Images/night.jpg')";
+        }
+
+        function toggleMenu() {
+            dropdownContent.style.display = dropdownContent.style.display === 'none' || dropdownContent.style.display === '' ? 'block' : 'none';
         }
 
         feedButton.addEventListener('click', feedRock);
         sleepButton.addEventListener('click', toggleSleep);
         document.addEventListener('mousemove', updateEyePositions);
-        setInterval(changeRockAppearance, 2000); 
+        setInterval(changeRockAppearance, 2000);
         setInterval(updateStatus, 1000);
         setInterval(blink, 5000);
     </script>
