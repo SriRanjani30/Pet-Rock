@@ -198,6 +198,7 @@
         <div class="dropdown-content" id="dropdownContent">
             <button onclick="switchToDay()">Day</button>
             <button onclick="switchToNight()">Night</button>
+            <button id="randomEyeButton" onclick="toggleRandomEyeMovement()">Start Random Eye Movement</button>
         </div>
     </div>
     <div id="rock">
@@ -218,7 +219,7 @@
     <div id="controls">
         <button id="feedButton">Feed Rock</button>
         <button id="sleepButton">Put Rock to Sleep</button>
-        <p id="status">Hunger: 100%</p>
+        <p id="status">Hunger: 50%</p>
     </div>
     <script>
         const rock = document.getElementById('rock');
@@ -230,9 +231,12 @@
         const sleepButton = document.getElementById('sleepButton');
         const status = document.getElementById('status');
         const dropdownContent = document.getElementById('dropdownContent');
+        const randomEyeButton = document.getElementById('randomEyeButton');
 
-        let hungerPoints = 100;
+        let hungerPoints = 50;
         let isAsleep = false;
+        let randomEyeMovementActive = false;
+        let randomEyeMovementInterval;
 
         function getRandomInt(max) {
             return Math.floor(Math.random() * max);
@@ -254,6 +258,7 @@
         }
 
         function updateEyePositions(event) {
+            if (randomEyeMovementActive) return;
             const rockRect = rock.getBoundingClientRect();
             const rockCenterX = rockRect.left + rockRect.width / 2;
             const rockCenterY = rockRect.top + rockRect.height / 2;
@@ -271,7 +276,7 @@
         }
 
         function feedRock() {
-            hungerPoints = 100;
+            hungerPoints = Math.max(hungerPoints - 20, 0);
             mouth.className = 'mouth happy';
             updateStatus();
         }
@@ -296,10 +301,10 @@
 
         function updateStatus() {
             if (!isAsleep) {
-                hungerPoints = Math.max(hungerPoints - 1, 0);
+                hungerPoints = Math.min(hungerPoints + 1, 100);
                 status.textContent = `Hunger: ${hungerPoints}%`;
-                if (hungerPoints === 0) {
-                    status.textContent += ' (Feed me!)';
+                if (hungerPoints === 100) {
+                    status.textContent += ' (Very Hungry!)';
                     rock.style.backgroundColor = '#ff6347';
                     mouth.className = 'mouth sad';
                 }
@@ -325,6 +330,33 @@
 
         function toggleMenu() {
             dropdownContent.style.display = dropdownContent.style.display === 'none' || dropdownContent.style.display === '' ? 'block' : 'none';
+        }
+
+        function randomEyeMovement() {
+            const eyeRadius = 10;
+
+            randomEyeMovementInterval = setInterval(() => {
+                const randomAngles = [Math.random() * 2 * Math.PI, Math.random() * 2 * Math.PI];
+                
+                pupils.forEach((pupil, index) => {
+                    pupil.style.transform = `translate(${Math.cos(randomAngles[index]) * eyeRadius}px, ${Math.sin(randomAngles[index]) * eyeRadius}px)`;
+                });
+            }, 100);
+        }
+
+        function toggleRandomEyeMovement() {
+            randomEyeMovementActive = !randomEyeMovementActive;
+
+            if (randomEyeMovementActive) {
+                randomEyeMovement();
+                randomEyeButton.textContent = 'Stop Random Eye Movement';
+            } else {
+                clearInterval(randomEyeMovementInterval);
+                pupils.forEach(pupil => {
+                    pupil.style.transform = `translate(0, 0)`;
+                });
+                randomEyeButton.textContent = 'Start Random Eye Movement';
+            }
         }
 
         feedButton.addEventListener('click', feedRock);
